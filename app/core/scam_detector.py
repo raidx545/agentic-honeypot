@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 class ScamRequest(BaseModel):
     message: str
 
-def is_scam(message:str) -> True:
+def is_scam(message:str) -> bool:
     load_dotenv()
     client = OpenAI(
         api_key = os.getenv("api_key"),
