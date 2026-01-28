@@ -1,13 +1,15 @@
 from openai import OpenAI
 from pydantic import BaseModel
 import json
+import os 
+from dotenv import load_dotenv
 class ScamRequest(BaseModel):
     message: str
 
 def is_scam(message:str) -> True:
-
+    load_dotenv()
     client = OpenAI(
-        api_key = "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",
+        api_key = os.getenv("api_key"),
         base_url="https://openrouter.ai/api/v1"
     )
 
@@ -48,7 +50,4 @@ def is_scam(message:str) -> True:
     
     return result["is_scam"]
 
-# print(is_scam("Sir your account has been blocked , send me money to this number"))
-
-if __name__ == "__main__":
-    is_scam()
+print(is_scam("Sir your account has been blocked , send me money to this number"))
