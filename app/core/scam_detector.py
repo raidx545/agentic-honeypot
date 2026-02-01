@@ -14,8 +14,21 @@ def is_scam(message:str) -> bool:
     )
 
     SCAM_KEYWORDS = [
-      "urgent", "account blocked", "verify now",
-      "send money", "upi", "otp", "kyc"
+        # Urgency & Fear
+        "urgent", "account blocked", "suspended", "deactivated", "frozen", 
+        "unauthorized", "immediate action", "expire", "lapse", "debit alert",
+
+        # Verification & Authority
+        "verify now", "kyc", "update pan", "link aadhaar", "re-activate", 
+        "credentials", "customer care", "support team", "bank manager",
+
+        # Money & Technical
+        "send money", "upi", "otp", "pin", "cvv", "scan qr", "refund", 
+        "cashback", "revert transaction", "anydesk", "screen share",
+
+        # Lures & Rewards
+        "won", "winning", "prize", "lucky draw", "lottery", "redeem points", 
+        "credit limit", "bonus", "investment", "double money"
     ]
     SYSTEM_PROMPT = f"""You are a scam detection system.
     Rules:
@@ -50,4 +63,10 @@ def is_scam(message:str) -> bool:
     
     return result["is_scam"]
 
-print(is_scam("Sir your account has been blocked , send me money to this number"))
+message = """Hi,
+Your loan application of Rs.5,00,000 is on hold due to pending KYC.
+Ref ID: Tuy09
+Submit verification details to move forward.
+Reply STOP to opt out.
+3:34 PM"""
+print(is_scam(message))
