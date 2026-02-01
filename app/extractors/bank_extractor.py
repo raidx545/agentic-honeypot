@@ -16,7 +16,7 @@ your account will be permanently blocked.
 
 📧 supportsbi@gamil[.]com"""
 client = OpenAI(
-    api_key="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",
+    api_key=api_key,
     base_url="https://openrouter.ai/api/v1"
 )
 SYSTEM_PROMPT = """You are an information extraction engine.
