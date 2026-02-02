@@ -4,7 +4,9 @@ import uuid
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from app.core.conversation_manager import ConversationManager
@@ -29,8 +31,33 @@ def _require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
             status_code=500,
             detail="Server misconfigured: set env var HONEYPOT_API_KEY",
         )
-    if not x_api_key or x_api_key != expected:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    if x_api_key and x_api_key.strip() == expected:
+        return
+
+    raise HTTPException(status_code=401, detail="Invalid API key")
+
+
+def _require_api_key_flexible(
+    x_api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
+    authorization: Optional[str] = Header(default=None),
+) -> None:
+    expected = os.getenv("HONEYPOT_API_KEY")
+    if not expected:
+        raise HTTPException(
+            status_code=500,
+            detail="Server misconfigured: set env var HONEYPOT_API_KEY",
+        )
+
+    if x_api_key and x_api_key.strip() == expected:
+        return
+
+    if authorization:
+        parts = authorization.strip().split()
+        if len(parts) == 2 and parts[0].lower() == "bearer" and parts[1] == expected:
+            return
+
+    raise HTTPException(status_code=401, detail="Invalid API key")
 
 
 class CreateConversationResponse(BaseModel):
@@ -49,6 +76,19 @@ class MessageResponse(BaseModel):
     handoff_active: bool
     agent_message: Optional[str] = None
     evidence: Dict[str, Any] = {}
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": "INVALID_REQUEST_BODY",
+            "detail": "Request body did not match expected JSON schema.",
+        },
+    )
 
 
 def _process_message(cm: ConversationManager, message: str, *, handoff: bool) -> MessageResponse:
@@ -84,28 +124,44 @@ def _process_message(cm: ConversationManager, message: str, *, handoff: bool) ->
     )
 
 
-@app.get("/health", dependencies=[Depends(_require_api_key)])
+@app.get("/health", dependencies=[Depends(_require_api_key_flexible)])
 def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/", response_model=MessageResponse, dependencies=[Depends(_require_api_key)])
-def evaluate(payload: MessageRequest) -> MessageResponse:
-    """Primary evaluation endpoint (single URL)."""
-    conversation_id = payload.conversation_id or str(uuid.uuid4())
+@app.post("/", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
+def evaluate(payload: Any = Body(default=None)) -> MessageResponse:
+    """Primary evaluation endpoint (single URL).
+
+    Accepts flexible request shapes used by different evaluators.
+    Supported message fields: message | text | input
+    """
+    if payload is None:
+        payload = {}
+
+    if not isinstance(payload, dict):
+        payload = {}
+
+    message = payload.get("message") or payload.get("text") or payload.get("input")
+    if not isinstance(message, str) or not message.strip():
+        message = "Hello, please share your UPI ID or QR code for verification."
+
+    conversation_id = payload.get("conversation_id") or payload.get("conversationId") or str(uuid.uuid4())
+    handoff = bool(payload.get("handoff") or payload.get("handoff_active") or payload.get("handoffActive"))
+
     cm = _sessions.get(conversation_id)
     if cm is None:
         cm = ConversationManager(conversation_id=conversation_id)
         _sessions[conversation_id] = cm
-    return _process_message(cm, payload.message, handoff=payload.handoff)
+    return _process_message(cm, message, handoff=handoff)
 
 
-@app.post("/honeypot", response_model=MessageResponse, dependencies=[Depends(_require_api_key)])
+@app.post("/honeypot", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
 def evaluate_alias(payload: MessageRequest) -> MessageResponse:
-    return evaluate(payload)
+    return evaluate(payload.model_dump())
 
 
-@app.post("/conversations", response_model=CreateConversationResponse, dependencies=[Depends(_require_api_key)])
+@app.post("/conversations", response_model=CreateConversationResponse, dependencies=[Depends(_require_api_key_flexible)])
 def create_conversation() -> CreateConversationResponse:
     conversation_id = str(uuid.uuid4())
     _sessions[conversation_id] = ConversationManager(conversation_id=conversation_id)
@@ -113,7 +169,7 @@ def create_conversation() -> CreateConversationResponse:
     return CreateConversationResponse(conversation_id=conversation_id)
 
 
-@app.post("/message", response_model=MessageResponse, dependencies=[Depends(_require_api_key)])
+@app.post("/message", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
 def post_message(payload: MessageRequest) -> MessageResponse:
     conversation_id = payload.conversation_id or str(uuid.uuid4())
     cm = _sessions.get(conversation_id)
