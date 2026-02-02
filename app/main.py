@@ -21,9 +21,9 @@ def main() -> None:
     repo = EvidenceRepository(file_path="evidence.json")
 
     print("Agentic Honeypot CLI")
-    print("Commands: 'exit' to quit, 'handoff' to force agent takeover")
+    print("Commands: 'exit' to quit 'handoff' to force agent takeover")
     print("Paste scammer message lines. One message per line.")
-    print("---")
+    print("____")
 
     while True:
         incoming = input("scammer> ").strip()

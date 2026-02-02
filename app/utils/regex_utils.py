@@ -63,4 +63,16 @@ def extract_mobile_numbers(text: str) -> List[str]:
 def extract_account_numbers(text: str) -> List[str]:
     cleaned = _deobfuscate(text)
     candidates = re.findall(r"\b\d{9,18}\b", cleaned)
-    return sorted(set(candidates))
+
+    mobile_set = set(extract_mobile_numbers(cleaned))
+
+    filtered = []
+    for c in candidates:
+        digits = re.sub(r"\D", "", c)
+        if digits in mobile_set:
+            continue
+        if len(digits) == 10:
+            continue
+        filtered.append(digits)
+
+    return sorted(set(filtered))

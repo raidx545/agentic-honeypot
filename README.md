@@ -70,6 +70,90 @@ Start the honeypot CLI:
 python3 -m app.main
 ```
 
+## Run (HTTP API for Deployment / Evaluation)
+
+This project also exposes a small HTTP API (FastAPI) so evaluators can test it via a deployed URL.
+
+### Environment variables
+
+- `HONEYPOT_API_KEY` (required)
+  - This is the API key you share with evaluators.
+- `OPENROUTER_API_KEY` (optional)
+  - Enables LLM-based scam detection + persona responses.
+  - If missing/invalid, the server uses safe fallbacks.
+
+### Start locally
+
+```bash
+HONEYPOT_API_KEY=dev-key uvicorn app.api.routes:app --host 0.0.0.0 --port 8000
+```
+
+### API endpoints
+
+- `GET /health`
+  - Requires header: `X-API-Key: <HONEYPOT_API_KEY>`
+- `POST /conversations`
+  - Creates a new conversation and returns `conversation_id`
+- `POST /message`
+  - Sends a scammer message, runs extraction + scam detection, and optionally returns an agent reply when `handoff=true`.
+
+### Submission (One Endpoint URL)
+
+If the platform asks for **one public API endpoint URL**, submit your deployed base URL with the **root POST endpoint**:
+
+- **Submit this URL:** `https://YOUR_DEPLOYED_DOMAIN/`
+- **Method:** `POST`
+- **Auth header:** `X-API-Key: <YOUR_HONEYPOT_API_KEY>`
+- **Body (JSON):**
+
+```json
+{
+  "conversation_id": null,
+  "message": "pay to raz@okaxis now",
+  "handoff": true
+}
+```
+
+Notes:
+- If `conversation_id` is omitted or `null`, the server will create a new one.
+- Use the returned `conversation_id` for subsequent requests.
+
+### cURL examples
+
+Create a conversation:
+
+```bash
+curl -s -X POST "http://localhost:8000/conversations" \
+  -H "X-API-Key: dev-key"
+```
+
+Single-endpoint call (recommended for evaluators):
+
+```bash
+curl -s -X POST "http://localhost:8000/" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: dev-key" \
+  -d '{"message":"Your account blocked verify at http://sbi-verify[.]online","handoff":true}'
+```
+
+Send a message (no handoff):
+
+```bash
+curl -s -X POST "http://localhost:8000/message" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: dev-key" \
+  -d '{"conversation_id":"<CID>","message":"Your account blocked, verify KYC at http://example[.]com"}'
+```
+
+Send a message + enable handoff:
+
+```bash
+curl -s -X POST "http://localhost:8000/message" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: dev-key" \
+  -d '{"conversation_id":"<CID>","message":"send payment to raz@okaxis","handoff":true}'
+```
+
 ### Commands
 
 - `handoff` — enable agent takeover

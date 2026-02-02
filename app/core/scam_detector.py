@@ -3,6 +3,7 @@ import json
 from openai import AuthenticationError
 
 from app.core.llm_client import get_openrouter_client
+from app.utils.regex_utils import extract_upi_ids, extract_urls
 
 
 def is_scam(message: str) -> bool:
@@ -22,6 +23,15 @@ def is_scam(message: str) -> bool:
         # Lures & Rewards
         "won", "winning", "prize", "lucky draw", "lottery", "redeem points", 
         "credit limit", "bonus", "investment", "double money"
+    ]
+
+    FALLBACK_EXTRA_KEYWORDS = [
+        "pay",
+        "payment",
+        "transfer",
+        "send",
+        "upi://",
+        "bank account",
     ]
     SYSTEM_PROMPT = f"""You are a scam detection system.
     Rules:
@@ -57,4 +67,12 @@ def is_scam(message: str) -> bool:
         return bool(result.get("is_scam", False))
     except (AuthenticationError, ValueError):
         lowered = message.lower()
-        return any(k in lowered for k in SCAM_KEYWORDS)
+        if any(k in lowered for k in SCAM_KEYWORDS):
+            return True
+        if any(k in lowered for k in FALLBACK_EXTRA_KEYWORDS):
+            return True
+        if extract_upi_ids(message):
+            return True
+        if extract_urls(message):
+            return True
+        return False

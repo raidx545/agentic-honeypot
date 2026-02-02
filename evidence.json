@@ -1,0 +1,119 @@
+{
+  "conversations": [
+    {
+      "conversation_id": "90e7bf47-9653-4e66-ad69-2a02d41e2f7a",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Dear Customer, your SBI account is blocked. Verify KYC at http://sbi-verify-kyc[.]online within 20 minutes.",
+          "ts": "2026-02-02T19:35:12.443255"
+        },
+        {
+          "role": "agent",
+          "content": "arre sir kya hua mera account block? qr code send kro mai vrfy krta hu",
+          "ts": "2026-02-02T19:35:20.654054"
+        }
+      ],
+      "evidence": {
+        "phishing_links": [
+          "http://sbi-verify-kyc.online"
+        ],
+        "bank_name": "SBI"
+      }
+    },
+    {
+      "conversation_id": "f8173b28-4900-42d4-ac18-4285fd9c6566",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "To unblock, send refund processing fee to srivastavarudra22@oksbi.",
+          "ts": "2026-02-02T19:35:20.870815"
+        },
+        {
+          "role": "agent",
+          "content": "sir ji upi id dobara bhejo na samajh ni aaya",
+          "ts": "2026-02-02T19:35:39.597252"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "srivastavarudra22@oksbi"
+        ],
+        "bank_name": "SBI"
+      }
+    },
+    {
+      "conversation_id": "22b0f4c1-4afd-4baf-975e-647e5d92510f",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Share OTP and CVV, and open https://g00gle-login[.]support now.",
+          "ts": "2026-02-02T19:35:39.812405"
+        },
+        {
+          "role": "agent",
+          "content": "arre otp kaise share kru sir network problem hai ye link open nhi ho rha",
+          "ts": "2026-02-02T19:35:47.509447"
+        }
+      ],
+      "evidence": {
+        "phishing_links": [
+          "https://g00gle-login.support"
+        ]
+      }
+    },
+    {
+      "conversation_id": "36c7d2cc-ab08-4ae5-9324-1d36c039d01c",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Dear Customer, your SBI account is blocked. Verify KYC at http://sbi-verify-kyc[.]online within 20 minutes.",
+          "ts": "2026-02-02T19:36:27.050558"
+        },
+        {
+          "role": "agent",
+          "content": "arre sir kya ho gya mera account block h gya kya kro?",
+          "ts": "2026-02-02T19:36:35.186897"
+        },
+        {
+          "role": "scammer",
+          "content": "To unblock, send refund processing fee to srivastavarudra22@oksbi.",
+          "ts": "2026-02-02T19:36:35.431086"
+        },
+        {
+          "role": "agent",
+          "content": "arre sirji ye refund fee kya hai plz ek bar aur smjha do me bhut confused hu",
+          "ts": "2026-02-02T19:36:41.744133"
+        },
+        {
+          "role": "scammer",
+          "content": "Share OTP and CVV, and open https://g00gle-login[.]support now.",
+          "ts": "2026-02-02T19:36:41.993386"
+        },
+        {
+          "role": "agent",
+          "content": "arre sir aap qr code bhejo mai pay krta hu otp cvv samajh nhi aa rha",
+          "ts": "2026-02-02T19:36:49.316745"
+        }
+      ],
+      "evidence": {
+        "phishing_links": [
+          "http://sbi-verify-kyc.online",
+          "https://g00gle-login.support"
+        ],
+        "bank_name": "SBI",
+        "upi_id": [
+          "srivastavarudra22@oksbi"
+        ]
+      }
+    }
+  ]
+}
