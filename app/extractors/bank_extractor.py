@@ -1,25 +1,12 @@
-from openai import OpenAI
-message = """Dear Customer,
+import json
 
-We have detected unauthorized activity on your bank account.
-For your safety, your account has been temporarily restricted.
-
-Details:
-6395897431
+from app.core.llm_client import get_openrouter_client
 
 
-To restore full access, verify your KYC immediately:
-👉 https://sbi-verify-kyc-secure[.]com
+def llm_extract(message: str) -> dict:
+    client = get_openrouter_client()
 
-If verification is not completed within 20 minutes,
-your account will be permanently blocked.
-
-📧 supportsbi@gamil[.]com"""
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://openrouter.ai/api/v1"
-)
-SYSTEM_PROMPT = """You are an information extraction engine.
+    SYSTEM_PROMPT = """You are an information extraction engine.
 
 Your task is to extract all identifiable structured data present in the given message.
 Extract ONLY what is explicitly present. Do NOT guess, infer, or hallucinate missing values.
@@ -55,11 +42,22 @@ Output JSON schema:
 }
 
 """
-llm_response = client.chat.completions.create(
-    model="deepseek/deepseek-v3.2",
-    messages=[{"role":"system","content":SYSTEM_PROMPT},{"role":"user","content":message}]
-)
 
-raw_output=llm_response.choices[0].message.content
+    llm_response = client.chat.completions.create(
+        model="deepseek/deepseek-v3.2",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": message},
+        ],
+    )
 
-print(raw_output)
+    raw_output = llm_response.choices[0].message.content.strip()
+    try:
+        parsed = json.loads(raw_output)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON from extractor LLM: {raw_output}") from e
+
+    if not isinstance(parsed, dict):
+        raise ValueError(f"Extractor must return a JSON object, got: {type(parsed)}")
+
+    return parsed

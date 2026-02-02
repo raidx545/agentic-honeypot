@@ -1,21 +1,16 @@
-from openai import OpenAI
-from pydantic import BaseModel
-import os 
-from dotenv import load_dotenv
 import json
-class agent(BaseModel):
-    message: str
+import re
+
+from openai import AuthenticationError
+
+from app.core.llm_client import get_openrouter_client
 
 
-#letting that scam_detector detects message as True
-def agent_reply(message:str):
-
-    load_dotenv()
-
-    client = OpenAI(
-        api_key = os.getenv("api_key"),
-        base_url="https://openrouter.ai/api/v1"
-    )
+def agent_reply(message: str) -> dict:
+    try:
+        client = get_openrouter_client()
+    except Exception:
+        client = None
 
     SYSTEM_PROMPT = """
     You are a naive, non-tech-savvy Indian user chatting with a scammer on WhatsApp.
@@ -44,20 +39,45 @@ def agent_reply(message:str):
     
     """
 
-    llm_response = client.chat.completions.create(
-        model="deepseek/deepseek-v3.2",
-        messages = [{"role":"system" , "content":SYSTEM_PROMPT},
-                    {"role":"user","content":f"SCAMMER MESSAGE {message}"}]
-    )
-    raw_output = llm_response.choices[0].message.content.strip()
+    if client is None:
+        return {
+            "message1": "sir ji ek bar upi id bhejo na mai pay kar deta hu",
+            "message2": "arre app hang ho rha hai qr code clear bhejo plz",
+            "message3": "net slow hai thoda wait karo bhai",
+        }
 
-    # print(raw_output)
     try:
-        messages = json.loads(raw_output)
+        llm_response = client.chat.completions.create(
+            model="deepseek/deepseek-v3.2",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": f"SCAMMER MESSAGE {message}"},
+            ],
+        )
+        raw_output = llm_response.choices[0].message.content.strip()
+    except AuthenticationError:
+        return {
+            "message1": "sir upi id dedo mai try kar rha hu",
+            "message2": "qr bhejo na camera se scan kar lunga",
+            "message3": "gpay me problem aa rha hai wait",
+        }
+
+    cleaned = raw_output.strip()
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+    if cleaned.startswith("{{") and cleaned.endswith("}}"):
+        cleaned = cleaned[1:-1].strip()
+
+    try:
+        messages = json.loads(cleaned)
     except json.JSONDecodeError:
-        raise ValueError(f"Invalid JSON from Engagement AI: {raw_output}")
+        return {
+            "message1": "sir ji thoda confuse ho rha hu upi id bhejo ek bar",
+            "message2": "arre qr code clear bhejo na mai scan karunga",
+            "message3": "net issue aa rha hai 2 min wait",
+        }
 
-    for i in messages:
-        print(messages[i])
+    if not isinstance(messages, dict):
+        raise ValueError(f"Engagement AI must return a JSON object, got: {type(messages)}")
 
-agent_reply("Hello sir! Congratulations! You have won Rs. 50,00,000 in our lucky draw! Please share your bank details to receive the amount.")
+    return messages

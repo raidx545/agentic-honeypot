@@ -1,18 +1,11 @@
-from openai import OpenAI
-from pydantic import BaseModel
 import json
-import os 
-from dotenv import load_dotenv
-class ScamRequest(BaseModel):
-    message: str
 
-def is_scam(message:str) -> bool:
-    load_dotenv()
-    client = OpenAI(
-        api_key = os.getenv("api_key"),
-        base_url="https://openrouter.ai/api/v1"
-    )
+from openai import AuthenticationError
 
+from app.core.llm_client import get_openrouter_client
+
+
+def is_scam(message: str) -> bool:
     SCAM_KEYWORDS = [
         # Urgency & Fear
         "urgent", "account blocked", "suspended", "deactivated", "frozen", 
@@ -45,28 +38,23 @@ def is_scam(message:str) -> bool:
     }}
 """
     
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
-        messages=[{"role":"system" , "content":f"{SYSTEM_PROMPT}"},
-                  {
-                      "role":"user" , "content" : f"{message}"
-                  }
-        ]
-    )
+    try:
+        client = get_openrouter_client()
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {"role": "system", "content": f"{SYSTEM_PROMPT}"},
+                {"role": "user", "content": f"{message}"},
+            ],
+        )
+        raw_output = response.choices[0].message.content.strip()
 
-    raw_output = response.choices[0].message.content.strip()
+        try:
+            result = json.loads(raw_output)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Wrong JSON format from LLM: {raw_output}") from e
 
-    try :
-        result = json.loads(raw_output)
-    except json.JSONDecodeError:
-        raise ValueError("Wrong JSON format from LLM")
-    
-    return result["is_scam"]
-
-message = """Hi,
-Your loan application of Rs.5,00,000 is on hold due to pending KYC.
-Ref ID: Tuy09
-Submit verification details to move forward.
-Reply STOP to opt out.
-3:34 PM"""
-print(is_scam(message))
+        return bool(result.get("is_scam", False))
+    except (AuthenticationError, ValueError):
+        lowered = message.lower()
+        return any(k in lowered for k in SCAM_KEYWORDS)
