@@ -77,7 +77,25 @@ def agent_reply(message: str) -> dict:
             "message3": "net issue aa rha hai 2 min wait",
         }
 
+    if isinstance(messages, list):
+        values = [str(v).strip() for v in messages if str(v).strip()]
+        if not values:
+            return {
+                "message1": "sir ji upi id bhejo na ek bar",
+                "message2": "qr code clear bhejo plz",
+                "message3": "net issue aa rha hai wait",
+            }
+        return {
+            "message1": values[0] if len(values) > 0 else "sir upi id bhejo",
+            "message2": values[1] if len(values) > 1 else "qr bhejo na",
+            "message3": values[2] if len(values) > 2 else "wait net slow",
+        }
+
     if not isinstance(messages, dict):
-        raise ValueError(f"Engagement AI must return a JSON object, got: {type(messages)}")
+        return {
+            "message1": "sir ji upi id bhejo na ek bar",
+            "message2": "arre qr code clear bhejo plz",
+            "message3": "net slow hai thoda wait",
+        }
 
     return messages

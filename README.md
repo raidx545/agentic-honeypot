@@ -97,6 +97,11 @@ HONEYPOT_API_KEY=dev-key uvicorn app.api.routes:app --host 0.0.0.0 --port 8000
 - `POST /message`
   - Sends a scammer message, runs extraction + scam detection, and optionally returns an agent reply when `handoff=true`.
 
+- `POST /scan`
+  - Stateless endpoint: send one message and receive one JSON output.
+  - Accepts message fields: `message` or `text` or `input`.
+  - If you pass `handoff=true`, it will also include `agent_message` when the input is classified as a scam.
+
 ### Submission (One Endpoint URL)
 
 If the platform asks for **one public API endpoint URL**, submit your deployed base URL with the **root POST endpoint**:
@@ -118,6 +123,10 @@ Notes:
 - If `conversation_id` is omitted or `null`, the server will create a new one.
 - Use the returned `conversation_id` for subsequent requests.
 
+If the evaluator expects a **single request → single JSON output** flow, you can also submit:
+
+- `https://YOUR_DEPLOYED_DOMAIN/scan`
+
 ### cURL examples
 
 Create a conversation:
@@ -134,6 +143,15 @@ curl -s -X POST "http://localhost:8000/" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: dev-key" \
   -d '{"message":"Your account blocked verify at http://sbi-verify[.]online","handoff":true}'
+```
+
+Stateless scan call:
+
+```bash
+curl -s -X POST "http://localhost:8000/scan" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: dev-key" \
+  -d '{"input":"pay to raz@okaxis now","handoff":true}'
 ```
 
 Send a message (no handoff):

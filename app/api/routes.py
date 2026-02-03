@@ -78,6 +78,12 @@ class MessageResponse(BaseModel):
     evidence: Dict[str, Any] = {}
 
 
+class ScanResponse(BaseModel):
+    scam_detected: bool
+    agent_message: Optional[str] = None
+    evidence: Dict[str, Any] = {}
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
@@ -142,12 +148,23 @@ def evaluate(payload: Any = Body(default=None)) -> MessageResponse:
     if not isinstance(payload, dict):
         payload = {}
 
-    message = payload.get("message") or payload.get("text") or payload.get("input")
-    if not isinstance(message, str) or not message.strip():
-        message = "Hello, please share your UPI ID or QR code for verification."
+    raw_message = payload.get("message") or payload.get("text") or payload.get("input")
+    message_provided = isinstance(raw_message, str) and bool(raw_message.strip())
+    message = raw_message.strip() if message_provided else "Hello, please share your UPI ID or QR code for verification."
 
     conversation_id = payload.get("conversation_id") or payload.get("conversationId") or str(uuid.uuid4())
-    handoff = bool(payload.get("handoff") or payload.get("handoff_active") or payload.get("handoffActive"))
+
+    handoff_keys_present = any(
+        k in payload for k in ("handoff", "handoff_active", "handoffActive")
+    )
+    if message_provided:
+        handoff = (
+            bool(payload.get("handoff") or payload.get("handoff_active") or payload.get("handoffActive"))
+            if handoff_keys_present
+            else True
+        )
+    else:
+        handoff = False
 
     cm = _sessions.get(conversation_id)
     if cm is None:
@@ -159,6 +176,42 @@ def evaluate(payload: Any = Body(default=None)) -> MessageResponse:
 @app.post("/honeypot", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
 def evaluate_alias(payload: MessageRequest) -> MessageResponse:
     return evaluate(payload.model_dump())
+
+
+@app.post("/scan", response_model=ScanResponse, dependencies=[Depends(_require_api_key_flexible)])
+def scan(payload: Any = Body(default=None)) -> ScanResponse:
+    """Stateless endpoint: evaluator sends one message, receives one JSON output.
+
+    Supported message fields: message | text | input
+    Optional flags: handoff | handoff_active | handoffActive (to request agent reply)
+    """
+    if payload is None:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+
+    message = payload.get("message") or payload.get("text") or payload.get("input")
+    if not isinstance(message, str) or not message.strip():
+        raise HTTPException(status_code=400, detail="INVALID_REQUEST_BODY")
+
+    want_agent = bool(payload.get("handoff") or payload.get("handoff_active") or payload.get("handoffActive"))
+
+    evidence = extract_evidence(message, use_llm_fallback=True)
+    scam = is_scam(message)
+
+    agent_message: Optional[str] = None
+    if scam and want_agent:
+        options = agent_reply(message)
+        values = [v for v in options.values() if isinstance(v, str) and v.strip()]
+        agent_message = values[0] if values else None
+        if agent_message:
+            agent_message = " ".join(agent_message.split())
+
+    return ScanResponse(
+        scam_detected=scam,
+        agent_message=agent_message,
+        evidence=evidence,
+    )
 
 
 @app.post("/conversations", response_model=CreateConversationResponse, dependencies=[Depends(_require_api_key_flexible)])
