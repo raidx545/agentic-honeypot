@@ -1,385 +1,128 @@
 {
   "conversations": [
     {
-      "conversation_id": "ece9c752-fe2e-434d-a958-41452a82d461",
+      "conversation_id": "2dd10964-3b96-4c11-8eaf-cafaefb83161",
       "scam_detected": true,
       "handoff_active": true,
       "history": [
         {
           "role": "scammer",
-          "content": "⚠️ URGENT NOTICE – SBI BANKDear Customer, your SBI account XXXXXX4512 will be blocked within 24 hours due to incomplete KYC.Please verify immediately to avoid suspension of services.👉 Update KYC: http://sbi-kyc-verification[.]inFor assistance, contact our executive:📞 +91 98765 43210Regards,SBI Security Team",
-          "ts": "2026-02-03T09:24:37.027536"
+          "content": "hello dear customer... this is SBI security team. your account will be BLOCKED. pls verify now",
+          "ts": "2026-02-03T20:55:56.113006"
         },
         {
           "role": "agent",
-          "content": "oh sir ye kya ho gya kyc kya hota hai mera account band na ho jaye",
-          "ts": "2026-02-03T09:24:56.673854"
+          "content": "oh dear! hello... i dnt want my account blocked... i have my retirement savings of $45,000 in there for my grandson. i will verify. what must i do?",
+          "ts": "2026-02-03T20:56:07.674690"
         }
       ],
       "evidence": {
-        "phishing_links": [
-          "http://sbi-kyc-verification.inFor"
-        ],
         "bank_name": "SBI"
       }
     },
     {
-      "conversation_id": "e7b0bde6-88aa-4bfa-8572-0ea39475c7fb",
-      "scam_detected": true,
+      "conversation_id": "dd3a29f0-8b32-425a-b0bc-1354d0ccb70a",
+      "scam_detected": false,
       "handoff_active": true,
       "history": [
         {
           "role": "scammer",
-          "content": "Dear Customer,Your ICICI Bank account has been flagged due to failed KYC verification under RBI guidelines. If not verified within 12 hours, your account services will be temporarily suspended.Account Holder Name: Amit KumarAccount Number: 324598741236Bank Name: ICICI BankBranch: Connaught Place, New DelhiIFSC Code: ICIC0001234Last Transaction: ₹18,750 (UPI)Date & Time: 03-02-2026 | 11:42 AMRegistered Mobile: +91 98XXX 43210UPI ID: amit.kumar@okiciciPlease confirm your details immediately using the secure link below:👉 http://icici-kyc-secure[.]in/verifyFailure to act will result in:• Debit freeze• UPI disabled• Net-banking blockedFor urgent assistance, contact:Relationship Manager: R. Sharma📞 +91 91234 88990📧 support.icici.verify@gmail[.]com— ICICI Bank Security Cell",
-          "ts": "2026-02-03T09:26:20.771366"
+          "content": "Dear Customer,",
+          "ts": "2026-02-04T09:24:58.191020"
         },
         {
           "role": "scammer",
-          "content": "Dear Customer,Your ICICI Bank account has been flagged due to failed KYC verification under RBI guidelines. If not verified within 12 hours, your account services will be temporarily suspended.Account Holder Name: Amit KumarAccount Number: 324598741236Bank Name: ICICI BankBranch: Connaught Place, New DelhiIFSC Code: ICIC0001234Last Transaction: ₹18,750 (UPI)Date & Time: 03-02-2026 | 11:42 AMRegistered Mobile: +91 98XXX 43210UPI ID: amit.kumar@okiciciPlease confirm your details immediately using the secure link below:👉 http://icici-kyc-secure[.]in/verifyFailure to act will result in:• Debit freeze• UPI disabled• Net-banking blockedFor urgent assistance, contact:Relationship Manager: R. Sharma📞 +91 91234 88990📧 support.icici.verify@gmail[.]com— ICICI Bank Security Cell",
-          "ts": "2026-02-03T09:26:31.824488"
-        },
-        {
-          "role": "agent",
-          "content": "bhai mera phone slow h network issue h plz upi id dedo thoda fast",
-          "ts": "2026-02-03T09:26:41.429402"
-        },
+          "content": "Your ICICI Bank account has been flagged due to failed KYC verification under RBI guidelines. If not verified within 12 hours, your account services will be temporarily suspended.",
+          "ts": "2026-02-04T09:25:03.891710"
+        }
+      ],
+      "evidence": {
+        "bank_name": "ICICI"
+      }
+    },
+    {
+      "conversation_id": "510db072-9d4c-4d2a-9dc1-5f2e470aa1aa",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
         {
           "role": "scammer",
-          "content": "raazporwal6@okaxis",
-          "ts": "2026-02-03T09:26:57.477059"
-        },
-        {
-          "role": "agent",
-          "content": "sir net slow hai, plz qr code snd kro",
-          "ts": "2026-02-03T09:27:05.906274"
+          "content": "⚠️ IMPORTANT: ACCOUNT SECURITY ALERT — Dear Customer, your ICICI Bank account has been flagged due to failed KYC verification under RBI guidelines and will be temporarily suspended within 12 hours if not verified. Account Holder: Amit Kumar, Account No: 324598741236, Branch: Connaught Place, New Delhi, IFSC: ICIC0001234. A recent transaction of ₹18,750 via UPI was recorded on 03-02-2026 at 11:42 AM. Registered Mobile: +91 98XXX 43210, UPI ID: amit.kumar@okicici. Please confirm your details immediately at http://icici-kyc-secure[.]in/verify",
+          "ts": "2026-02-04T09:26:52.802123"
         }
       ],
       "evidence": {
         "upi_id": [
-          "amit.kumar@okiciciPlease",
-          "raazporwal6@okaxis",
-          "support.icici.verify@gmail"
+          "amit.kumar@okicici"
         ],
-        "email": [
-          "support.icici.verify@gmail.com"
+        "ifsc_code": [
+          "ICIC0001234"
+        ],
+        "account_number": [
+          "324598741236"
         ],
         "phishing_links": [
-          "http://icici-kyc-secure.in/verifyFailure"
+          "http://icici-kyc-secure.in/verify"
         ],
         "bank_name": "ICICI"
       }
     },
     {
-      "conversation_id": "96a3b5b9-ffa0-4224-9807-a76aa53684fd",
+      "conversation_id": "7470a0c8-a524-4473-b6a3-c2a05b4046ef",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "⚠️ IMPORTANT: ACCOUNT SECURITY ALERT — Dear Customer, your ICICI Bank account has been flagged due to failed KYC verification under RBI guidelines and will be temporarily suspended within 12 hours if not verified. Account Holder: Amit Kumar, Account No: 324598741236, Branch: Connaught Place, New Delhi, IFSC: ICIC0001234. A recent transaction of ₹18,750 via UPI was recorded on 03-02-2026 at 11:42 AM. Registered Mobile: +91 98XXX 43210, UPI ID: amit.kumar@okicici. Please confirm your details immediately at http://icici-kyc-secure[.]in/verify to avoid debit freeze, UPI disablement, and net-banking blockage. For urgent assistance, contact Relationship Manager R. Sharma at +91 91234 88990 or support.icici.verify@gmail[.]com. — ICICI Bank Security Cell (Automated message)",
+          "ts": "2026-02-04T09:28:19.069709"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "amit.kumar@okicici",
+          "support.icici.verify@gmail"
+        ],
+        "ifsc_code": [
+          "ICIC0001234"
+        ],
+        "account_number": [
+          "324598741236"
+        ],
+        "email": [
+          "support.icici.verify@gmail.com"
+        ],
+        "phishing_links": [
+          "http://icici-kyc-secure.in/verify"
+        ],
+        "bank_name": "ICICI"
+      }
+    },
+    {
+      "conversation_id": "abf51141-974b-4b79-9526-6b9147484f11",
       "scam_detected": true,
       "handoff_active": true,
       "history": [
         {
           "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:30:36.567099"
+          "content": "URGENT: click http://sbi-verify[.]online and pay to helpdesk.sbi@okaxis",
+          "ts": "2026-02-04T20:14:26.867175"
         },
         {
           "role": "agent",
-          "content": "arre sir mera sbi ka account kabhi tha bhi kya? phir bhi verify kroge toh acha hi hai. bhai qr code bhejo mai tm pay krta hu",
-          "ts": "2026-02-03T19:30:45.341410"
+          "content": "oh yes i clicked the LINK... it says SECURITY and SBI but my screen is fuzzy... i am trying to pay.",
+          "ts": "2026-02-04T20:14:33.467419"
         }
       ],
       "evidence": {
         "upi_id": [
-          "raz@okaxis"
+          "helpdesk.sbi@okaxis"
         ],
         "phishing_links": [
           "http://sbi-verify.online"
         ],
         "bank_name": "SBI"
       }
-    },
-    {
-      "conversation_id": "fb2f7da9-e25e-42cb-ab94-c84002ef41d9",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:30:45.601642"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "e86d2db7-cb5a-47ad-a043-c13bc7698d12",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:31:28.237451"
-        },
-        {
-          "role": "agent",
-          "content": "sir aap plz qr code bhej do mai direct scan krke pay krta hu",
-          "ts": "2026-02-03T19:31:40.437199"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "2fcde821-33b0-4e86-9739-31010ae21d72",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:31:40.653377"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "7df887d7-1f1e-4d3c-b3cd-3c37f8592a0b",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:31:49.309129"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "6bc81a32-6ad9-4845-89ef-0361127a1818",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:32:02.753034"
-        },
-        {
-          "role": "agent",
-          "content": "arre sir mere pass toh sbi account hi nahi hai kya yeh kaam chalega?",
-          "ts": "2026-02-03T19:32:13.570224"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "45e334b0-8b6e-415e-b682-907c7f49e9f7",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:32:13.799809"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "9e5e8c6c-423b-4c12-93d4-39ce327dfddd",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:32:16.548400"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "acacb7bb-fe90-449a-8e4e-0df92796a69e",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:33:27.185768"
-        },
-        {
-          "role": "agent",
-          "content": "arre sirji ye link open hi nahi ho rha hai, direct qr code bhejo na plz",
-          "ts": "2026-02-03T19:33:50.810728"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "fa5eb3d2-b9d7-42bb-ac37-6c693f7b7f29",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:33:51.209480"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "5710fb5a-28e7-4298-a31b-d7d600ea9753",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:33:56.269969"
-        }
-      ],
-      "evidence": {}
-    },
-    {
-      "conversation_id": "d488d20e-153b-4d17-b0b1-4d5b53245613",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:34:59.455437"
-        },
-        {
-          "role": "agent",
-          "content": "arre sir kya hua meri acccount blocked kyu kro mene toh kch nhi kiya",
-          "ts": "2026-02-03T19:35:10.063109"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "ef23d585-31e7-47fd-89cc-3b3b09775877",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "our SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:37:19.052363"
-        },
-        {
-          "role": "scammer",
-          "content": "our SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:37:25.406896"
-        },
-        {
-          "role": "agent",
-          "content": "wait net slow hai, kya upi id snd kroge?",
-          "ts": "2026-02-03T19:37:29.493803"
-        },
-        {
-          "role": "scammer",
-          "content": "raz@okaxis",
-          "ts": "2026-02-03T19:37:42.225781"
-        },
-        {
-          "role": "agent",
-          "content": "arre sir ye razorpay nahi samaj aya, simple upi id dedo plz",
-          "ts": "2026-02-03T19:37:52.315109"
-        },
-        {
-          "role": "scammer",
-          "content": "killu43@okaxis",
-          "ts": "2026-02-03T19:38:13.033644"
-        },
-        {
-          "role": "agent",
-          "content": "sir ji wait kro ye app thik se nhi chal rha... qr code send kro na",
-          "ts": "2026-02-03T19:38:25.899928"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "killu43@okaxis",
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "a3e84cad-5f28-4a8c-954c-1570859673a3",
-      "scam_detected": true,
-      "handoff_active": true,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Your SBI account blocked verify at http://sbi-verify[.]online pay to raz@okaxis",
-          "ts": "2026-02-03T19:58:28.624119"
-        },
-        {
-          "role": "agent",
-          "content": "arre sir aapka msg aya but mera sbi ka app khul nhi rha, kya payment karna hoga?",
-          "ts": "2026-02-03T19:58:40.767064"
-        }
-      ],
-      "evidence": {
-        "upi_id": [
-          "raz@okaxis"
-        ],
-        "phishing_links": [
-          "http://sbi-verify.online"
-        ],
-        "bank_name": "SBI"
-      }
-    },
-    {
-      "conversation_id": "b878cbf4-b024-4aa4-bb65-aab76f556562",
-      "scam_detected": true,
-      "handoff_active": false,
-      "history": [
-        {
-          "role": "scammer",
-          "content": "Hello, please share your UPI ID or QR code for verification.",
-          "ts": "2026-02-03T19:58:41.043296"
-        }
-      ],
-      "evidence": {}
     }
   ]
 }

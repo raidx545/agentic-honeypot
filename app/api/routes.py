@@ -112,7 +112,14 @@ def _process_message(cm: ConversationManager, message: str, *, handoff: bool) ->
 
     agent_message: Optional[str] = None
     if cm.state.scam_detected and cm.state.handoff_active:
-        options = agent_reply(message)
+        desired_fields = ("upi_id", "phishing_links", "account_number", "ifsc_code")
+        missing_fields = [k for k in desired_fields if not cm.state.evidence.get(k)]
+        recent_history = [f"{e.role}: {e.content}" for e in cm.state.history[-10:]]
+        options = agent_reply(
+            message,
+            missing_fields=missing_fields,
+            recent_history=recent_history,
+        )
         values = [v for v in options.values() if isinstance(v, str) and v.strip()]
         agent_message = values[0] if values else None
         if agent_message:
@@ -201,7 +208,9 @@ def scan(payload: Any = Body(default=None)) -> ScanResponse:
 
     agent_message: Optional[str] = None
     if scam and want_agent:
-        options = agent_reply(message)
+        desired_fields = ("upi_id", "phishing_links", "account_number", "ifsc_code")
+        missing_fields = [k for k in desired_fields if not evidence.get(k)]
+        options = agent_reply(message, missing_fields=missing_fields, recent_history=[f"scammer: {message}"])
         values = [v for v in options.values() if isinstance(v, str) and v.strip()]
         agent_message = values[0] if values else None
         if agent_message:

@@ -64,7 +64,16 @@ def is_scam(message: str) -> bool:
         except json.JSONDecodeError as e:
             raise ValueError(f"Wrong JSON format from LLM: {raw_output}") from e
 
-        return bool(result.get("is_scam", False))
+        llm_is_scam = bool(result.get("is_scam", False))
+        if llm_is_scam:
+            return True
+
+        if extract_upi_ids(message):
+            return True
+        if extract_urls(message):
+            return True
+
+        return False
     except (AuthenticationError, ValueError):
         lowered = message.lower()
         if any(k in lowered for k in SCAM_KEYWORDS):
