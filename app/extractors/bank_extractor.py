@@ -1,5 +1,8 @@
 import json
 
+from openai import AuthenticationError
+from openai import RateLimitError
+
 from app.core.llm_client import get_openrouter_client
 
 
@@ -43,15 +46,17 @@ Output JSON schema:
 
 """
 
-    llm_response = client.chat.completions.create(
-        model="deepseek/deepseek-v3.2",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": message},
-        ],
-    )
-
-    raw_output = llm_response.choices[0].message.content.strip()
+    try:
+        llm_response = client.chat.completions.create(
+            model="meta-llama/llama-3.3-70b-instruct:free",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message},
+            ],
+        )
+        raw_output = llm_response.choices[0].message.content.strip()
+    except (AuthenticationError, RateLimitError):
+        return {}
     try:
         parsed = json.loads(raw_output)
     except json.JSONDecodeError as e:

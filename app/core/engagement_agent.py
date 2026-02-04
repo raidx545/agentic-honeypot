@@ -3,6 +3,7 @@ import re
 from typing import List, Optional
 
 from openai import AuthenticationError
+from openai import RateLimitError
 
 from app.core.llm_client import get_openrouter_client
 
@@ -105,14 +106,14 @@ def agent_reply(
 
     try:
         llm_response = client.chat.completions.create(
-            model="deepseek/deepseek-v3.2",
+            model="meta-llama/llama-3.3-70b-instruct:free",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": f"SCAMMER MESSAGE {message}"},
             ],
         )
         raw_output = llm_response.choices[0].message.content.strip()
-    except AuthenticationError:
+    except (AuthenticationError, RateLimitError):
         return _fallback()
 
     cleaned = raw_output.strip()

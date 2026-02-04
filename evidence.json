@@ -123,6 +123,32 @@
         ],
         "bank_name": "SBI"
       }
+    },
+    {
+      "conversation_id": "9825394f-9f73-4ec4-802d-7e0e601332a9",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "URGENT: click http://sbi-verify[.]online and pay to helpdesk.sbi@okaxis",
+          "ts": "2026-02-04T20:27:15.893943"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-04T20:27:24.619227"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "helpdesk.sbi@okaxis"
+        ],
+        "phishing_links": [
+          "http://sbi-verify.online"
+        ],
+        "bank_name": "SBI"
+      }
     }
   ]
 }

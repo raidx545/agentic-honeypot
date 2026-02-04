@@ -1,6 +1,7 @@
 import json
 
 from openai import AuthenticationError
+from openai import RateLimitError
 
 from app.core.llm_client import get_openrouter_client
 from app.utils.regex_utils import extract_upi_ids, extract_urls
@@ -51,7 +52,7 @@ def is_scam(message: str) -> bool:
     try:
         client = get_openrouter_client()
         response = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
+            model="meta-llama/llama-3.3-70b-instruct:free",
             messages=[
                 {"role": "system", "content": f"{SYSTEM_PROMPT}"},
                 {"role": "user", "content": f"{message}"},
@@ -74,7 +75,7 @@ def is_scam(message: str) -> bool:
             return True
 
         return False
-    except (AuthenticationError, ValueError):
+    except (AuthenticationError, RateLimitError, ValueError):
         lowered = message.lower()
         if any(k in lowered for k in SCAM_KEYWORDS):
             return True
