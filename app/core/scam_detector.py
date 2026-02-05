@@ -75,7 +75,9 @@ def is_scam(message: str) -> bool:
             return True
 
         return False
-    except (AuthenticationError, RateLimitError, ValueError):
+        return False
+    except Exception:
+        # Fallback for ANY LLM error (auth, rate limit, quota, connection, etc.)
         lowered = message.lower()
         if any(k in lowered for k in SCAM_KEYWORDS):
             return True

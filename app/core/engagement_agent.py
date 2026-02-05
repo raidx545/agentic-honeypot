@@ -113,7 +113,7 @@ def agent_reply(
             ],
         )
         raw_output = llm_response.choices[0].message.content.strip()
-    except (AuthenticationError, RateLimitError):
+    except Exception:
         return _fallback()
 
     cleaned = raw_output.strip()

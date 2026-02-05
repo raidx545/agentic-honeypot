@@ -27,6 +27,86 @@
         }
       ],
       "evidence": {}
+    },
+    {
+      "conversation_id": "demo-chat-001",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Your account is locked. Click http://scam-link.net and pay 500 to upi@fakebank",
+          "ts": "2026-02-05T17:20:51.131477"
+        },
+        {
+          "role": "scammer",
+          "content": "Why are you not paying? Send to account 1234567890",
+          "ts": "2026-02-05T17:20:55.766991"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-05T17:20:58.435377"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "upi@fakebank"
+        ],
+        "phishing_links": [
+          "http://scam-link.net"
+        ]
+      }
+    },
+    {
+      "conversation_id": "demo-chat-002",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Your account is locked. Click http://scam-link.net and pay 500 to upi@fakebank",
+          "ts": "2026-02-05T17:21:48.232587"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-05T17:21:55.515156"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "upi@fakebank"
+        ],
+        "phishing_links": [
+          "http://scam-link.net"
+        ]
+      }
+    },
+    {
+      "conversation_id": "demo-chat-004",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Your account is locked. Click http://scam-link.net and pay 500 to upi@fakebank",
+          "ts": "2026-02-05T17:25:42.855074"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-05T17:25:52.735380"
+        }
+      ],
+      "evidence": {
+        "upi_id": [
+          "upi@fakebank"
+        ],
+        "phishing_links": [
+          "http://scam-link.net"
+        ]
+      }
     }
   ]
 }
