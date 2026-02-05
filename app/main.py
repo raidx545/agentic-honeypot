@@ -23,6 +23,13 @@ def main() -> None:
     print("Agentic Honeypot CLI")
     print("Commands: 'exit' to quit 'handoff' to force agent takeover")
     print("Paste scammer message lines. One message per line.")
+    
+    import os
+    if not (os.getenv("OPENROUTER_API_KEY") or os.getenv("api_key")):
+         print("\n⚠️  WARNING: OPENROUTER_API_KEY not found in environment!")
+         print("   The agent will run in BASIC MODE (keyword detection only, canned responses).")
+         print("   To enable full AI persona & extraction, set OPENROUTER_API_KEY in your .env or environment variables.\n")
+
     print("____")
 
     while True:
