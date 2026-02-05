@@ -1,0 +1,32 @@
+{
+  "conversations": [
+    {
+      "conversation_id": "wertyu-dfghj-ertyui",
+      "scam_detected": true,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Your bank account will be blocked today. Verify immediately.",
+          "ts": "2026-02-05T16:57:17.843889"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-05T16:57:27.822993"
+        },
+        {
+          "role": "scammer",
+          "content": "Share your UPI ID to avoid account suspension.",
+          "ts": "2026-02-05T17:03:58.471020"
+        },
+        {
+          "role": "agent",
+          "content": "upi is not working... ok yes i will do bank transfer... pls send account number + IFSC",
+          "ts": "2026-02-05T17:04:11.025602"
+        }
+      ],
+      "evidence": {}
+    }
+  ]
+}

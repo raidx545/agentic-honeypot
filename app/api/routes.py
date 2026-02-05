@@ -1,10 +1,10 @@
 
 import os
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from dotenv import load_dotenv
-from fastapi import Body, Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Request, BackgroundTasks
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -14,6 +14,7 @@ from app.core.engagement_agent import agent_reply
 from app.core.scam_detector import is_scam
 from app.services.intelligence_service import extract_evidence
 from app.storage.repository import EvidenceRepository
+from app.services.reporting_service import report_to_evaluator
 
 
 load_dotenv()
@@ -84,6 +85,30 @@ class ScanResponse(BaseModel):
     evidence: Dict[str, Any] = {}
 
 
+class IncomingMessage(BaseModel):
+    sender: str
+    text: str
+    timestamp: Optional[int] = None
+
+
+class IncomingMetadata(BaseModel):
+    channel: Optional[str] = None
+    language: Optional[str] = None
+    locale: Optional[str] = None
+
+
+class EvaluationRequest(BaseModel):
+    sessionId: Optional[str] = None
+    message: Optional[IncomingMessage] = None
+    conversationHistory: Optional[List[IncomingMessage]] = []
+    metadata: Optional[IncomingMetadata] = None
+    # Flexible extra fields
+    conversation_id: Optional[str] = None
+    text: Optional[str] = None
+    input: Optional[str] = None
+    handoff: Optional[bool] = None
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
@@ -97,7 +122,7 @@ async def validation_exception_handler(
     )
 
 
-def _process_message(cm: ConversationManager, message: str, *, handoff: bool) -> MessageResponse:
+def _process_message(cm: ConversationManager, message: str, *, handoff: bool, background_tasks: Optional[BackgroundTasks] = None) -> MessageResponse:
     if handoff:
         cm.set_handoff_active(True)
 
@@ -125,6 +150,17 @@ def _process_message(cm: ConversationManager, message: str, *, handoff: bool) ->
         if agent_message:
             agent_message = " ".join(agent_message.split())
             cm.add_message(role="agent", content=agent_message)
+        
+        # Trigger external reporting if scam is confirmed and we are engaging
+        if background_tasks:
+            background_tasks.add_task(
+                report_to_evaluator,
+                session_id=cm.state.conversation_id,
+                scam_detected=True,
+                total_messages=len(cm.state.history),
+                evidence=cm.state.evidence,
+                agent_notes="Scam detected and agent engaging."
+            )
 
     _repo.upsert_conversation(cm.to_json())
 
@@ -143,7 +179,7 @@ def health() -> Dict[str, str]:
 
 
 @app.post("/", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
-def evaluate(payload: Any = Body(default=None)) -> MessageResponse:
+def evaluate(background_tasks: BackgroundTasks, payload: Any = Body(default=None)) -> MessageResponse:
     """Primary evaluation endpoint (single URL).
 
     Accepts flexible request shapes used by different evaluators.
@@ -152,46 +188,97 @@ def evaluate(payload: Any = Body(default=None)) -> MessageResponse:
     if payload is None:
         payload = {}
 
-    if not isinstance(payload, dict):
-        payload = {}
+    if isinstance(payload, bytes):
+        # Should not happen with FastAPI parsing logic usually
+        pass 
+        
+    # Logic to normalize different payload shapes 
+    # default values
+    message_text = ""
+    session_id = str(uuid.uuid4())
+    handoff = True # Default to True for this endpoint as per requirements implying auto-agent activation if scam detected
 
-    raw_message = payload.get("message") or payload.get("text") or payload.get("input")
-    message_provided = isinstance(raw_message, str) and bool(raw_message.strip())
-    message = raw_message.strip() if message_provided else "Hello, please share your UPI ID or QR code for verification."
+    if isinstance(payload, dict):
+        # Check for new format keys first
+        if "sessionId" in payload:
+            session_id = payload["sessionId"]
+        elif "conversation_id" in payload:
+            session_id = payload["conversation_id"]
+        elif "conversationId" in payload:
+            session_id = payload["conversationId"]
+            
+        # Check message content
+        if "message" in payload and isinstance(payload["message"], dict):
+            # Nested message object
+            message_text = payload["message"].get("text", "")
+        else:
+            # Flat or legacy fields
+            message_text = payload.get("message") or payload.get("text") or payload.get("input") or ""
 
-    conversation_id = payload.get("conversation_id") or payload.get("conversationId") or str(uuid.uuid4())
+        # Check handoff
+        if "handoff" in payload:
+             handoff = bool(payload["handoff"])
+        elif "handoff_active" in payload:
+             handoff = bool(payload["handoff_active"])
 
-    handoff_keys_present = any(
-        k in payload for k in ("handoff", "handoff_active", "handoffActive")
-    )
-    if message_provided:
-        handoff = (
-            bool(payload.get("handoff") or payload.get("handoff_active") or payload.get("handoffActive"))
-            if handoff_keys_present
-            else True
-        )
-    else:
-        handoff = False
+        # Create/Get Session
+        cm = _sessions.get(session_id)
+        if cm is None:
+            cm = ConversationManager(conversation_id=session_id)
+            _sessions[session_id] = cm
+            
+            # Populate history if new session and history provided in payload
+            if "conversationHistory" in payload and isinstance(payload["conversationHistory"], list):
+                for msg in payload["conversationHistory"]:
+                    if isinstance(msg, dict):
+                        role = "scammer" if msg.get("sender") == "scammer" else "user" # mapping 'user' to something? or 'agent'? 
+                        # Assuming 'user' maps to 'agent' context or just ignored if innocent.
+                        # Simple mapping:
+                        role_map = "scammer" if msg.get("sender") == "scammer" else "agent"
+                        cm.add_message(role=role_map, content=msg.get("text", ""))
 
+    elif isinstance(payload, EvaluationRequest):
+        # Pydantic model usage (if fastAPI matches it automatically, but we used Any above)
+        # This branch might not be hit if we stick to Any validation manual
+        pass
+        
+    if not message_text.strip():
+        # Fallback for empty message
+        message_text = "Hello"
+
+    cm = _sessions.get(session_id)
+    if cm is None:
+        cm = ConversationManager(conversation_id=session_id)
+        _sessions[session_id] = cm
+
+    return _process_message(cm, message_text, handoff=handoff, background_tasks=background_tasks)
+
+
+@app.post("/conversations", response_model=CreateConversationResponse, dependencies=[Depends(_require_api_key_flexible)])
+def create_conversation() -> CreateConversationResponse:
+    conversation_id = str(uuid.uuid4())
+    _sessions[conversation_id] = ConversationManager(conversation_id=conversation_id)
+    _repo.upsert_conversation(_sessions[conversation_id].to_json())
+    return CreateConversationResponse(conversation_id=conversation_id)
+
+
+@app.post("/message", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
+def post_message(background_tasks: BackgroundTasks, payload: MessageRequest) -> MessageResponse:
+    conversation_id = payload.conversation_id or str(uuid.uuid4())
     cm = _sessions.get(conversation_id)
     if cm is None:
         cm = ConversationManager(conversation_id=conversation_id)
         _sessions[conversation_id] = cm
-    return _process_message(cm, message, handoff=handoff)
-
+    return _process_message(cm, payload.message, handoff=payload.handoff, background_tasks=background_tasks)
 
 @app.post("/honeypot", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
-def evaluate_alias(payload: MessageRequest) -> MessageResponse:
-    return evaluate(payload.model_dump())
-
+def evaluate_alias(background_tasks: BackgroundTasks, payload: MessageRequest) -> MessageResponse:
+    return evaluate(background_tasks, payload.model_dump())
 
 @app.post("/scan", response_model=ScanResponse, dependencies=[Depends(_require_api_key_flexible)])
 def scan(payload: Any = Body(default=None)) -> ScanResponse:
-    """Stateless endpoint: evaluator sends one message, receives one JSON output.
-
-    Supported message fields: message | text | input
-    Optional flags: handoff | handoff_active | handoffActive (to request agent reply)
-    """
+    # ... (existing scan logic, maybe update to use new reporting if needed? scan is stateless so maybe not)
+    # Keeping scan purely stateless as before
     if payload is None:
         payload = {}
     if not isinstance(payload, dict):
@@ -221,21 +308,3 @@ def scan(payload: Any = Body(default=None)) -> ScanResponse:
         agent_message=agent_message,
         evidence=evidence,
     )
-
-
-@app.post("/conversations", response_model=CreateConversationResponse, dependencies=[Depends(_require_api_key_flexible)])
-def create_conversation() -> CreateConversationResponse:
-    conversation_id = str(uuid.uuid4())
-    _sessions[conversation_id] = ConversationManager(conversation_id=conversation_id)
-    _repo.upsert_conversation(_sessions[conversation_id].to_json())
-    return CreateConversationResponse(conversation_id=conversation_id)
-
-
-@app.post("/message", response_model=MessageResponse, dependencies=[Depends(_require_api_key_flexible)])
-def post_message(payload: MessageRequest) -> MessageResponse:
-    conversation_id = payload.conversation_id or str(uuid.uuid4())
-    cm = _sessions.get(conversation_id)
-    if cm is None:
-        cm = ConversationManager(conversation_id=conversation_id)
-        _sessions[conversation_id] = cm
-    return _process_message(cm, payload.message, handoff=payload.handoff)
