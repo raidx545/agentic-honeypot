@@ -198,6 +198,19 @@
         }
       ],
       "evidence": {}
+    },
+    {
+      "conversation_id": "98f89763-a0a5-4bc3-880c-aa7886986f5a",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer",
+          "ts": "2026-02-06T10:02:09.662394"
+        }
+      ],
+      "evidence": {}
     }
   ]
 }
