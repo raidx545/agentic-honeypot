@@ -48,7 +48,7 @@ Output JSON schema:
 
     try:
         llm_response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
+            model="deepseek/deepseek-v3.2",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": message},

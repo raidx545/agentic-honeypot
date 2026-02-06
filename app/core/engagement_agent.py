@@ -54,7 +54,7 @@ If they asked for payment, say you are trying.
     try:
         client = get_openrouter_client()
         response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
+            model="deepseek/deepseek-v3.2",
             messages=[
                 {"role": "system", "content": PERSONA},
                 {"role": "user", "content": prompt},

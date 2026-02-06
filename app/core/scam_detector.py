@@ -52,7 +52,7 @@ def is_scam(message: str) -> bool:
     try:
         client = get_openrouter_client()
         response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
+            model="deepseek/deepseek-v3.2",
             messages=[
                 {"role": "system", "content": f"{SYSTEM_PROMPT}"},
                 {"role": "user", "content": f"{message}"},
