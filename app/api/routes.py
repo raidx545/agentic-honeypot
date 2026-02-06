@@ -137,7 +137,7 @@ def _process_message(cm: ConversationManager, message: str, *, handoff: bool) ->
     )
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"], dependencies=[Depends(_require_api_key_flexible)])
 def health() -> Dict[str, str]:
     return {"status": "ok"}
 
