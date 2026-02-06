@@ -107,6 +107,97 @@
           "http://scam-link.net"
         ]
       }
+    },
+    {
+      "conversation_id": "58a8e65d-eb0e-4085-bef3-14680b113de3",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer",
+          "ts": "2026-02-06T09:29:22.265875"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "9ab051ae-e584-47fc-a1e9-5ed2e4318b87",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer text",
+          "ts": "2026-02-06T09:29:30.490365"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "0c01a7aa-e76d-49ef-9d04-72715f8bb4cc",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer input",
+          "ts": "2026-02-06T09:29:36.335164"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "ca0316a2-c251-48fa-9a98-dc8ad9042919",
+      "scam_detected": true,
+      "handoff_active": false,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "Hello, please share your UPI ID or QR code for verification.",
+          "ts": "2026-02-06T09:29:41.259548"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "01f4df6b-460b-4981-b65f-b4fe4c259888",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "scam likely",
+          "ts": "2026-02-06T09:29:46.183015"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "909fb031-c18b-4359-b277-fc64491dd846",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer",
+          "ts": "2026-02-06T09:29:54.369954"
+        }
+      ],
+      "evidence": {}
+    },
+    {
+      "conversation_id": "d80ede4d-abef-4840-9506-9a773ed6e82c",
+      "scam_detected": false,
+      "handoff_active": true,
+      "history": [
+        {
+          "role": "scammer",
+          "content": "hello scammer text",
+          "ts": "2026-02-06T09:29:59.230868"
+        }
+      ],
+      "evidence": {}
     }
   ]
 }

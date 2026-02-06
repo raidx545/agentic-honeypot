@@ -55,7 +55,8 @@ Output JSON schema:
             ],
         )
         raw_output = llm_response.choices[0].message.content.strip()
-    except (AuthenticationError, RateLimitError):
+    except Exception:
+        # Fallback for any LLM error (quota, auth, connection, etc.)
         return {}
     try:
         parsed = json.loads(raw_output)
